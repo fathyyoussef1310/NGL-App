@@ -1,32 +1,33 @@
 import User from "../model/user.model.js";
 
 const createUser = async (userData) => {
-    const user = await User.create(userData);
-    return user.save();
+    return await User.create(userData);
 };
+
 const checkUserByEmail = async (email) => {
-    const  userExists =  await User.findOne({
+    return await User.findOne({
         email
     }).select("+password");
-    return userExists;
-}
-const verifyAccount = async (email , code) => {
-    const user = await User.findOne({
+};
+
+const verifyAccount = async (email, code) => {
+    return await User.findOne({
         email,
         code
     });
-    return user;
 };
+
 const updateUserByEmail = async (email, updatedData) => {
-    return User.findOneAndUpdate(
+    return await User.findOneAndUpdate(
         { email },
         updatedData,
-        { returnDocument: 'after' }
+        { returnDocument: "after" }
     );
 };
-export  {
+
+export {
     createUser,
     checkUserByEmail,
     verifyAccount,
-    updateUserByEmail,
-}
+    updateUserByEmail
+};
