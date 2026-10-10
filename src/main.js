@@ -3,9 +3,11 @@ import express from "express";
 import Otp from "./app/auth/model/Otp.model.js";
 import {AppError} from "./common/utils/appError.js";
 import {logger} from "./common/logger/logger.js";
+import cors from "cors";
 import authRouter from "./app/auth/route/auth.route.js";
 const app = express();
 
+app.use(cors({origin: "*"}));
 app.use(express.json());
 app.use('/auth', authRouter);
 app.use((err, req, res, next) => {
@@ -14,7 +16,6 @@ app.use((err, req, res, next) => {
         return res.status(err.statusCode).json({
             message: err.message,
             success: false,
-            stack: err.stack
         });
     }
 

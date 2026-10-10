@@ -1,4 +1,4 @@
-import * as userRepo from "../../user/repository/user.repo.js";
+import * as userRepo from "../../auth/repository/auth.repo.js";
 import Otp from "../../auth/model/Otp.model.js";
 import * as nodemailer from "../../../common/email/nodeMailer.js";
 import * as otpRepository from "../../auth/repository/otp.repository.js";
@@ -10,6 +10,9 @@ import {generateOtpEmail} from "../../../common/utils/otp.generator.js";
 import {logger} from "../../../common/logger/logger.js";
 import {generateToken} from "../../../common/utils/genrateToken.js";
 import {comparePassword, hashPassword} from "../../../common/utils/bcrypt.js";
+import {verifyGoogleToken} from "../../../common/utils/googleauth.js";
+import * as authRepo from "./auth.service.js";
+import {OAuth2Client} from "google-auth-library";
 
 export const createUser = async (userData) => {
     const hashedPassword = await hashPassword(userData.password);
@@ -75,7 +78,6 @@ export const verifyUser = async (userData) => {
 
 export const loginUser = async (email, password) => {
     const user = await userRepo.checkUserByEmail(email);
-
     if (!user) {
         throw new AppError("Invalid email or password!", 401);
     }
@@ -137,3 +139,14 @@ export const forgetPassword = async (email, code, newPassword) => {
 
     return updatedUser;
 };
+
+export let loginWithGoogle = async (email, clientId) => {
+    const payload = await verifyGoogleToken(payload.email)
+    const user = await  authRepo.createUser({
+        email : payload.email,
+        name: payload.name,
+        provider : true,
+        isVerified: true,
+    })
+    return generateToken({ id: user._id, email: user.email, name: user.name });
+}
