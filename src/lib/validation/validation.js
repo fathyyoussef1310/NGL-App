@@ -1,5 +1,5 @@
 import z from 'zod'
-import {AppError} from "../utils/appError.js";
+import {AppError} from "../gobalErrorHandler/appError.js";
 
  export function validateBody(dto,body) {
     const result = dto.safeParse(body)

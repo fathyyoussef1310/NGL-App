@@ -1,16 +1,16 @@
 import * as userRepo from "../../auth/repository/auth.repo.js";
 import Otp from "../../auth/model/Otp.model.js";
-import * as nodemailer from "../../../common/email/nodeMailer.js";
+import * as nodemailer from "../../../lib/email/nodeMailer.js";
 import * as otpRepository from "../../auth/repository/otp.repository.js";
-import {toMins} from "../../../common/utils/time.js";
+import {toMins} from "../../../pkg/utils/time.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import {AppError} from "../../../common/utils/appError.js";
-import {generateOtpEmail} from "../../../common/utils/otp.generator.js";
-import {logger} from "../../../common/logger/logger.js";
-import {generateToken} from "../../../common/utils/genrateToken.js";
-import {comparePassword, hashPassword} from "../../../common/utils/bcrypt.js";
-import {verifyGoogleToken} from "../../../common/utils/googleauth.js";
+import {AppError} from "../../../lib/gobalErrorHandler/appError.js";
+import {generateOtpEmail} from "../../../lib/utils/otp.generator.js";
+import {logger} from "../../../pkg/logger/logger.js";
+import {generateToken} from "../../../lib/utils/genrateToken.js";
+import {comparePassword, hashPassword} from "../../../lib/utils/bcrypt.js";
+import {verifyGoogleToken} from "../../../lib/utils/googleauth.js";
 import * as authRepo from "./auth.service.js";
 import {OAuth2Client} from "google-auth-library";
 

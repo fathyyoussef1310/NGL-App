@@ -2,9 +2,9 @@
   "name": "ngl-app",
   "version": "1.0.0",
   "description": "",
-  "main": "src/main.js.js",
+  "main": "src/server.js.js",
   "scripts": {
-    "dev": "node --watch src/main.js",
+    "dev": "node --watch src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -18,10 +18,14 @@
     "express": "^5.2.1",
     "google-auth-library": "^11.1.0",
     "install": "^0.13.0",
+    "ioredis": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.6.0",
     "mongoose": "^9.10.1",
     "nodemailer": "^10.0.10",
     "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5"
   }
 }

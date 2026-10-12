@@ -1,7 +1,7 @@
 import * as authServices from "../services/auth.service.js";
-import { toMins } from "../../../common/utils/time.js";
-import { AppError } from "../../../common/utils/appError.js";
-import { validateBody } from "../../../common/validation/validation.js";
+import { toMins } from "../../../pkg/utils/time.js";
+import { AppError } from "../../../lib/gobalErrorHandler/appError.js";
+import { validateBody } from "../../../lib/validation/validation.js";
 import {
     forgetPasswordDto,
     loginDto,

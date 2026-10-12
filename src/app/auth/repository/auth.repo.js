@@ -1,6 +1,6 @@
 import User from "../../user/model/user.model.js";
 import {OAuth2Client} from "google-auth-library";
-import {AppError} from "../../../common/utils/appError.js";
+import {AppError} from "../../../lib/gobalErrorHandler/appError.js";
 import * as authRepo from "../services/auth.service.js";
 
 const createUser = async (userData) => {

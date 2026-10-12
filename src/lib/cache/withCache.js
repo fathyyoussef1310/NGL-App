@@ -1,0 +1,29 @@
+import { cacheProvider } from "./init.js";
+
+export function withCache(ttl = 3600) {
+    return async (req, res, next) => {
+        try {
+            let key = `${req.method}:${req.originalUrl}`;
+            const cached = await cacheProvider.get(key);
+            if (cached) {
+                res.setHeader("Cache-Control", "HIT");
+                return res.status(200).json(JSON.parse(cached));
+            }
+
+            const originalJson = res.json.bind(res);
+
+            //// Interceptor
+            res.json = (body) => {
+                cacheProvider.set(key, JSON.stringify(body), ttl)
+                    .catch((err) => {
+                        console.error("Cache error:", err);
+                    });
+                res.setHeader("Cache-Control", "MISS");
+                return originalJson(body);
+            };
+            next();
+        } catch (err) {
+            next(err);
+        }
+    };
+}
