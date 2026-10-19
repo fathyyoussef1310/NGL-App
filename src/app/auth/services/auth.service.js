@@ -13,6 +13,7 @@ import {comparePassword, hashPassword} from "../../../lib/utils/bcrypt.js";
 import {verifyGoogleToken} from "../../../lib/utils/googleauth.js";
 import * as authRepo from "./auth.service.js";
 import {OAuth2Client} from "google-auth-library";
+import {mailJetProvider} from "../../../lib/email/initEmail.js";
 
 export const createUser = async (userData) => {
     const hashedPassword = await hashPassword(userData.password);
@@ -31,9 +32,11 @@ export const createUser = async (userData) => {
                 Date.now() + toMins(5, "minutes")
             )
         });
-
-        await nodemailer.sendEmail(user.email, code);
-
+        await mailJetProvider.sendEmail(
+            userData.email,
+            'Verification Code',
+            `<h1>Your verification code is ${code}</h1>`
+        );
         return user;
 
     } catch (err) {
@@ -103,7 +106,6 @@ export const sendOtpEmail = async (email) => {
     await otpRepository.deleteOtp(email);
 
     const code = generateOtpEmail();
-    logger.info("code:", code);
 
     await Otp.create({
         code,
@@ -111,12 +113,11 @@ export const sendOtpEmail = async (email) => {
         expiredAt: new Date(Date.now() + toMins(5, "minutes"))
     });
 
-    await nodemailer.sendEmail(
-        email,
-        code
+    await mailJetProvider.sendEmail(email,
+        'NGL-APP',
+        `<h1>Your verification code is ${code}</h1>`
     );
 };
-
 export const forgetPassword = async (email, code, newPassword) => {
     const user = await userRepo.checkUserByEmail(email);
     if (!user) {

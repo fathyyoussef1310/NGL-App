@@ -1,4 +1,4 @@
-import { createApp } from "./main.js";
+import { createApp } from "./app.js";
 import http from "http";
 import mongoose from "mongoose";
 
@@ -12,11 +12,12 @@ async function shutDown() {
     });
 }
 
-process.on("SIGINT", shutDown);
-process.on("SIGTERM", shutDown);
+process.on("SIGINT", shutDown); ///CTRL+C
+
+process.on("SIGTERM", shutDown); //// Unexpected Event
 
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    });
+});

@@ -12,6 +12,10 @@ const schema = z.object({
     REDIS_PORT: z.string().default('6379'),
     REDIS_HOST: z.string().default('127.0.0.1'),
     REDIS_PASSWORD: z.string().default(''),
+    MAILJET_API_KEY: z.string().min(1),
+    MAILJET_API_SECRET: z.string().min(1),
+    MAILJET_FROM_EMAIL: z.string().email(),
+    MAILJET_FROM_NAME: z.string().min(1),
 });
 
 // To Parse Data
@@ -37,5 +41,12 @@ export const env = {
     },
     google: {
         clientId: parsed.GOOGLE_OAUTH_CLIENTID,
+    },
+    mailJet: {
+        apiKey: parsed.MAILJET_API_KEY,
+        apiSecret: parsed.MAILJET_API_SECRET,
+        fromName: parsed.MAILJET_FROM_NAME,
+        fromEmail: parsed.MAILJET_FROM_EMAIL,
     }
+
 };

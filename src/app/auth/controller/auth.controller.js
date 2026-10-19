@@ -64,11 +64,9 @@ const sendOtp = async (req, res, next) => {
     try {
         const data = validateBody(sendOtpDto, req.body);
         const { email } = data;
-        const userData = await authServices.sendOtpEmail(email);
-
+        await authServices.sendOtpEmail(email);
         res.status(200).json({
             message: "OTP sent successfully",
-            user: userData,
         });
     } catch (err) {
         next(err);
@@ -82,8 +80,9 @@ const forgetPassword = async (req, res, next) => {
 
         const userData = await authServices.forgetPassword(email, code, newPassword);
 
-        res.status(200).json({
+        return res.status(200).json({
             message: "Password reset successfully",
+            success: true,
             user: userData,
         });
     } catch (err) {
