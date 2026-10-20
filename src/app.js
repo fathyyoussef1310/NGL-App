@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import { globalErrorHandler } from "./lib/gobalErrorHandler/error.handler.js";
 import { router } from "./route.js";
-import { correlationId } from "./lib/correlation/correlationId.js";
+import { correlationId } from "./pkg/correlation/correlationId.js";
 import cookieParser from "cookie-parser";
 
 export const createApp = () => {
