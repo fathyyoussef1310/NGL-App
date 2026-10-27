@@ -11,5 +11,6 @@ authRouter.post('/login' , authController.login)
 authRouter.post('/login-with-google' , authController.loginWithGoogleC)
 authRouter.post('/send-otp' , authController.sendOtp)
 authRouter.patch('/reset-Password' , idempotency(),authController.forgetPassword)
+authRouter.post("/refresh-token", authController.refresh);
 
 export default authRouter;

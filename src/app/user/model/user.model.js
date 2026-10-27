@@ -33,7 +33,10 @@ const userSchema = new  Schema({
     isVerified:{
      type: Boolean,
      default: false
-    }
+    },
+    profileImage: String,
+    coverImage: String,
+    cvPath:String,
 } ,   {
     timestamps: true,
     strict: false,

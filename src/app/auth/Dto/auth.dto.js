@@ -25,3 +25,12 @@ export const forgetPasswordDto = z.object({
     code: z.string().trim().min(4).max(10),
     newPassword: z.string().trim().min(6).max(50), // ← مطابق للـ body اللي بتبعتُه
 });
+
+
+export const refreshTokenDto = z.object({
+    refreshToken: z.string().min(1, "refreshToken is required"),
+});
+
+export const googleLoginDto = z.object({
+    idToken: z.string().min(1, "idToken is required"),
+});

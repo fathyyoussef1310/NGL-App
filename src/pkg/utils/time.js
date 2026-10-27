@@ -1,11 +1,13 @@
 export function toMins(time,unit){
     switch(unit){
         case "seconds":
-            time * 1000;
+            return time * 1000;
         case "minutes":
-            time * 60 * 1000;
+            return time * 60 * 1000;
         case "hours":
-            time * 60 * 60 * 1000;
+            return time * 60 * 60 * 1000;
+        case "days":
+            return time * 60 * 60 * 1000 *24;
         default:
             return time;
     }

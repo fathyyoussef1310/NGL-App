@@ -1,10 +1,16 @@
 import multer, { diskStorage } from "multer";
 import path from "path";
+import { AppError } from "../gobalErrorHandler/appError.js";
 
-function fileUploads() {
+function fileUploads(allowedTypes) {
     return multer({
-        storage: diskStorage({
-            destination: "uploads",
+        fileFilter: function (req, file, cb) {
+            if (!allowedTypes.includes(file.mimetype)) {
+                return cb(new AppError("Invalid file type."));
+            }
+            cb(null, true);
+        },
+        storage: diskStorage({destination: "uploads",
             filename: (req, file, cb) => {
                 const unique = Date.now() + "-" + Math.round(Math.random() * 1e9);
                 cb(null, unique + path.extname(file.originalname));
@@ -13,16 +19,29 @@ function fileUploads() {
     });
 }
 
-export function uploadSingle(field) {
-    return fileUploads().single(field);
+export function uploadSingle(field, allowedTypes = ['image/png', 'image/jpeg'])
+{
+    return fileUploads(allowedTypes).single(field);
 }
 
-export function uploadMultiple(field, maxCount = 10) {
-    return fileUploads().array(field, maxCount);
+export function uploadMultiple(field, maxCount = 10,
+    allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ])
+{
+    return fileUploads(allowedTypes).array(field, maxCount);
 }
 
-export function uploadsFields(fields) {
-    return fileUploads().fields(fields);
+export function uploadsFields(fields, allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'image/png'
+    ]
+) {
+    return fileUploads(allowedTypes).fields(fields);
 }
 
 export function uploadNone() {

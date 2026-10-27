@@ -12,6 +12,10 @@ export const createApp = () => {
     app.use(correlationId);
     app.use(express.json());
     app.use(cookieParser());
+    app.get('/health',(req,res,next)=>{
+        console.log('server is Hit');
+        res.json('OK')
+    })
     app.use("/api", router);
     app.use(globalErrorHandler);
 

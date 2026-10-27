@@ -1,6 +1,10 @@
-import { createApp } from "./app.js";
 import http from "http";
 import mongoose from "mongoose";
+import dns from "node:dns";
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
+const { createApp } = await import("./app.js");
 
 const app = createApp();
 const server = http.createServer(app);
@@ -12,11 +16,10 @@ async function shutDown() {
     });
 }
 
-process.on("SIGINT", shutDown); ///CTRL+C
+process.on("SIGINT", shutDown); // CTRL+C
+process.on("SIGTERM", shutDown); // Unexpected event
 
-process.on("SIGTERM", shutDown); //// Unexpected Event
-
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

@@ -3,8 +3,8 @@ import { toMins } from "../../../pkg/utils/time.js";
 import { AppError } from "../../../lib/gobalErrorHandler/appError.js";
 import { validateBody } from "../../../lib/validation/validation.js";
 import {
-    forgetPasswordDto,
-    loginDto,
+    forgetPasswordDto, googleLoginDto,
+    loginDto, refreshTokenDto,
     registerDto,
     sendOtpDto,
     verifyAccountDto,
@@ -15,7 +15,6 @@ const createUser = async (req, res, next) => {
     try {
         const data = validateBody(registerDto, req.body);
         const userData = await authServices.createUser(data);
-
         res.status(201).json({
             message: "Successfully created user",
             user: userData,
@@ -43,7 +42,7 @@ const verifyUser = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const data = validateBody(loginDto, req.body);
-        const { email, password } = data;
+        const { email, refreshToken , password } = data;
         const token = await authServices.loginUser(email, password);
 
         res.cookie("access_Token", token, {
@@ -54,6 +53,7 @@ const login = async (req, res, next) => {
         res.status(200).json({
             message: "Successfully logged in",
             token,
+            refreshToken,
         });
     } catch (err) {
         next(err);
@@ -92,7 +92,10 @@ const forgetPassword = async (req, res, next) => {
 
 const loginWithGoogleC = async (req, res, next) => {
     try {
-        const token = await authServices.loginWithGoogle(req.body.idToken);
+
+        const data = validateBody(googleLoginDto, req.body);
+        const { accessToken, refreshToken, user } = await authServices.loginWithGoogle(data.idToken);
+
         res.cookie("access_Token", token, {
             httpOnly: true,
             maxAge: toMins(1, "hours"),
@@ -106,4 +109,15 @@ const loginWithGoogleC = async (req, res, next) => {
     }
 }
 
-export { createUser, verifyUser, login, sendOtp, forgetPassword ,  loginWithGoogleC };
+const refresh = async (req, res, next) => {
+    try {
+        const data = validateBody(refreshTokenDto, req.body);
+        const { accessToken, refreshToken } = await authServices.refreshSession(data.refreshToken);
+        res.status(200).json({ accessToken, refreshToken });
+    } catch (err) {
+        next(err);
+    }
+};
+
+
+export { createUser, verifyUser, login, sendOtp, forgetPassword ,  loginWithGoogleC , refresh};
