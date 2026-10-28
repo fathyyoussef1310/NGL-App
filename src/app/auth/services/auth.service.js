@@ -2,7 +2,7 @@ import crypto from "node:crypto";
 import * as userRepo from "../../auth/repository/auth.repo.js";
 import Otp from "../../auth/model/Otp.model.js";
 import * as otpRepository from "../../auth/repository/otp.repository.js";
-import * as tokens from "./token.service.js";
+import * as tokensServices from "./token.service.js";
 import { toMins } from "../../../pkg/utils/time.js";
 import { AppError } from "../../../lib/gobalErrorHandler/appError.js";
 import { generateOtpEmail } from "../../../lib/utils/otp.generator.js";
@@ -13,20 +13,14 @@ import * as refreshTokenRepo from "../repository/refresh-token.repoistory.js";
 // ---------- helpers ----------
 import jwt from "jsonwebtoken";
 
-async function issuePair(user, family) {
-    const accessToken = tokens.signAccess(user);
-    const refreshToken = tokens.signRefresh(user, family);
-
+async function issuePair(user , family){
+    const accessToken = tokensServices.signAccess(user)
+    const refreshToken = tokensServices.signRefresh(user , family);
     const { exp } = jwt.decode(refreshToken);
-
-    await refreshTokenRepo.create({
-        user: user.id,
-        family,
-        tokenHash: tokens.hash(refreshToken),
-        expiresAt: new Date(exp * 1000),
-    });
-
-    return { accessToken, refreshToken };
+    await  refreshTokenRepo.create(
+        {user:user.id, family,tokenHash:tokensServices.hash(refreshToken),expiresAt:new Date(exp * 1000)},
+    );
+    return {refreshToken , accessToken}
 }
 
 const toPublicUser = (user) => ({ id: user.id, email: user.email, name: user.name });
@@ -168,12 +162,12 @@ export const forgetPassword = async (email, code, newPassword) => {
 export const refreshSession = async (refreshToken) => {
     let payload;
     try {
-        payload = tokens.verifyRefresh(refreshToken);
+        payload = tokensServices.verifyRefresh(refreshToken);
     } catch {
         throw new AppError("Invalid refresh token", 401);
     }
 
-    const stored = await refreshTokenRepo.findByHash(tokens.hash(refreshToken));
+    const stored = await refreshTokenRepo.findByHash(tokensServices.hash(refreshToken));
     if (!stored) throw new AppError("Invalid refresh token", 401);
 
     if (stored.revokedAt) {

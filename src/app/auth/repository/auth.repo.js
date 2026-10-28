@@ -26,11 +26,6 @@ const updateUserByEmail = async (email, updatedData) => {
         { returnDocument: "after" }
     );
 };
-
-export const LoginWithGoogle = async (userToken) => {
-    return await User.create(userToken);
-}
-
 export const findUserById = (id) => User.findById(id);
 
 export {
