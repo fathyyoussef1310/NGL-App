@@ -10,6 +10,7 @@ import {
     verifyAccountDto,
 } from "../Dto/auth.dto.js";
 import {loginWithGoogle} from "../services/auth.service.js";
+import {setAuthCookies} from "../../../lib/auth/utils.cookies.js";
 
 const createUser = async (req, res, next) => {
     try {
@@ -42,23 +43,42 @@ const verifyUser = async (req, res, next) => {
 const login = async (req, res, next) => {
     try {
         const data = validateBody(loginDto, req.body);
-        const { email, refreshToken , password } = data;
+        const { email, tokens , password } = data;
         const token = await authServices.loginUser(email, password);
 
-        res.cookie("access_Token", token, {
-            httpOnly: true,
-            maxAge: toMins(1, "hours"),
-        });
-
+        if (!tokens){
+            return res.json({
+                message:"Check Your Inbox",
+                success: true,
+            })
+        }
+        setAuthCookies(res ,tokens)
         res.status(200).json({
             message: "Successfully logged in",
             token,
-            refreshToken,
+            tokens,
         });
     } catch (err) {
         next(err);
     }
 };
+
+export const twoStepVerification =  async (req,res,next)=>
+{
+    try
+    {
+       const  {email , code} =req.body;
+       const ans = await authServices.enable2Verification(email, code);
+       res.status(200).json({
+           success: true,
+           message: "Successfully verified by two step Verification ",
+       })
+    }
+    catch (e)
+    {
+        next(e);
+    }
+}
 
 const sendOtp = async (req, res, next) => {
     try {
@@ -96,13 +116,14 @@ const loginWithGoogleC = async (req, res, next) => {
         const data = validateBody(googleLoginDto, req.body);
         const { accessToken, refreshToken, user } = await authServices.loginWithGoogle(data.idToken);
 
-        res.cookie("access_Token", token, {
-            httpOnly: true,
-            maxAge: toMins(1, "hours"),
-        })
+        setAuthCookies(res , refreshToken)
         res.status(200).json({
             message: "Successfully logged in",
-            data:token,
+            data:{
+                accessToken,
+                refreshToken,
+                user
+            }
         })
     }catch(err) {
         next(err);
@@ -113,11 +134,34 @@ const refresh = async (req, res, next) => {
     try {
         const data = validateBody(refreshTokenDto, req.body);
         const { accessToken, refreshToken } = await authServices.refreshSession(data.refreshToken);
+        setAuthCookies(res, refreshToken);
         res.status(200).json({ accessToken, refreshToken });
     } catch (err) {
         next(err);
     }
 };
 
+export async function verifyCodeToLogin(req, res, next) {
+    try {
+        const { email, code } = req.body;
+        const result = await authServices.verifyAfter2StepVer(email, code);
+        res.cookie("access_Token" , result.accessToken , {
+            httpOnly: true,
+            maxAge: toMins(1, "hours"),
+        });
+        res.cookie("refresh_Token" , result.refreshToken , {
+            httpOnly: true,
+            maxAge: toMins(7, "days"),
+            path:"/api/auth/refresh-token"
+        })
+        res.status(200).json({
+            success: true,
+            message: "Two-step verification successful",
+            data: result.user,
+        });
+    } catch (e) {
+        next(e);
+    }
+}
 
 export { createUser, verifyUser, login, sendOtp, forgetPassword ,  loginWithGoogleC , refresh};

@@ -30,6 +30,10 @@ const userSchema = new  Schema({
      type:Date,
      default:Date.now
     },
+    twoStepVerification:{
+     default: false,
+     type:Boolean,
+    },
     isVerified:{
      type: Boolean,
      default: false

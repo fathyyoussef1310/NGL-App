@@ -12,5 +12,7 @@ authRouter.post('/login-with-google' , authController.loginWithGoogleC)
 authRouter.post('/send-otp' , authController.sendOtp)
 authRouter.patch('/reset-Password' , idempotency(),authController.forgetPassword)
 authRouter.post("/refresh-token", authController.refresh);
+authRouter.patch('/two-step-verification' , authController.twoStepVerification)
+authRouter.post('/two-step-verification-login' , authController.verifyCodeToLogin)
 
 export default authRouter;
